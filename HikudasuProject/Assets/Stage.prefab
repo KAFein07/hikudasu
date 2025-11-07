@@ -119,6 +119,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 0}
-  defaltBlockMaterial: {fileID: 2100000, guid: 6a7edc338ddbf7a44b74d707c442f5a1, type: 2}
-  catchBlockMaterial: {fileID: 2100000, guid: 06d37c9a2d9bc4c40834559ea58c2237, type: 2}
+  _materials: []
+  copyLevel: 0
   blockID: 0
