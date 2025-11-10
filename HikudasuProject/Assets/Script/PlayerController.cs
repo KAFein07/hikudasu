@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -7,8 +8,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cameraCenter;
     [SerializeField] private GameObject lowLight;
     [SerializeField] private GameObject resultText;
+
     public Material[] yellowMaterials;
     public Material[] redMaterials;
+    public List<GameObject> selectedObjects = new List<GameObject>();
+    public bool canCatch = false;
+    public int view = 1;
 
     private float moveSpeed = 5;
     private float rotateSpeed = 10;
@@ -16,25 +21,18 @@ public class PlayerController : MonoBehaviour
     private float horizontalInput;
     private float verticalInput;
     private float scrollInput;
+    private float zoomSpeed = 1000;
     private bool canMove = true;
     private bool canRotate = true;
     private bool canJump;
-    private Vector3 moveDirection;
-    [SerializeField] private int catchBlockID = -1;
+    private bool catchMode;
+    private int catchBlockID = -1;
     private int maxBlockID = 0;
-    private float zoomSpeed = 1000;
-    private int childCount;
+    private int moveVector;
+    private Vector3 moveDirection;
     private Rigidbody rb;
     private GameObject camera;
     private List<GameObject> allStageBlocks;
-    public List<GameObject> selectedObjects = new List<GameObject>();
-    public bool canCatch = false;
-    public int view = 1;
-
-    [SerializeField] private bool catchMode;
-    private bool _bool = false;
-    private bool onlyPlus = false;
-    private bool onlyMinus = false;
 
     private void Start()
     {
@@ -49,12 +47,11 @@ public class PlayerController : MonoBehaviour
             if (maxBlockID <= _blockID)
                 maxBlockID = _blockID;
         }
+        maxBlockID *= 4;
     }
 
     private void Update()
     {
-        childCount = transform.childCount;
-
         // “ü—ÍŽæ“¾
         scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
@@ -77,23 +74,48 @@ public class PlayerController : MonoBehaviour
                 verticalInput = Input.GetAxis("Horizontal");
                 break;
         }
-        if (catchMode)
+        if (moveVector == 1)
         {
-            if (view == 1 || view == 3)
+            switch (view)
             {
-                horizontalInput = 0;
-                if (onlyPlus && verticalInput > 0)
-                    verticalInput = 0;
-                else if (onlyMinus && verticalInput < 0)
-                    verticalInput = 0;
+                case 1:
+                    if (verticalInput < 0)
+                        verticalInput = 0;
+                    break;
+                case 2:
+                    if (horizontalInput < 0)
+                        horizontalInput = 0;
+                    break;
+                case 3:
+                    if (verticalInput > 0)
+                        verticalInput = 0;
+                    break;
+                case 4:
+                    if (horizontalInput > 0)
+                        horizontalInput = 0;
+                    break;
             }
-            else
+        }
+        else if (moveVector == -1)
+        {
+            switch (view)
             {
-                verticalInput = 0;
-                if (onlyPlus && horizontalInput > 0)
-                    horizontalInput = 0;
-                else if (onlyMinus && horizontalInput < 0)
-                    horizontalInput = 0;
+                case 1:
+                    if (verticalInput > 0)
+                        verticalInput = 0;
+                    break;
+                case 2:
+                    if (horizontalInput > 0)
+                        horizontalInput = 0;
+                    break;
+                case 3:
+                    if (verticalInput < 0)
+                        verticalInput = 0;
+                    break;
+                case 4:
+                    if (horizontalInput < 0)
+                        horizontalInput = 0;
+                    break;
             }
         }
 
@@ -122,29 +144,37 @@ public class PlayerController : MonoBehaviour
             transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
 
         //Ž‹“_•ÏX
-        if (Input.GetKeyDown(KeyCode.E) && canRotate)
+        if (Input.GetKeyDown(KeyCode.E) && canRotate && catchMode == false)
         {
             StartCoroutine(RotationCoroutine(1));
             canRotate = false;
         }
-        if (Input.GetKeyDown(KeyCode.Q) && canRotate)
+        if (Input.GetKeyDown(KeyCode.Q) && canRotate && catchMode == false)
         {
             StartCoroutine(RotationCoroutine(-1));
             canRotate = false;
         }
 
-        //if (selectedObjects.Count > 0 && verticalInput < 0)
         if (selectedObjects.Count > 0 && Input.GetMouseButtonDown(1))
         {
-            foreach (var obj in selectedObjects)
+            var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
+            List<GameObject> result = new List<GameObject>();
+            foreach (var group in grouped)
             {
-                Vector3 objPos = obj.transform.position;
-                GameObject copyObject = Instantiate(obj, objPos, obj.transform.rotation,  this.transform);
-                StageBlockController _stageBlockController = copyObject.GetComponent<StageBlockController>();
-                _stageBlockController.Initialize(this, objPos, view, maxBlockID);
-                allStageBlocks.Add(copyObject);
+                if (view == 1 || view == 3)
+                {
+                    float minDistance = group.Min(b => Mathf.Abs(b.transform.position.z - this.transform.position.z));
+                    var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.z - this.transform.position.z) == minDistance).ToList();
+                    result.AddRange(nearestBlocks);
+                }
+                else
+                {
+                    float minDistance = group.Min(b => Mathf.Abs(b.transform.position.x - this.transform.position.x));
+                    var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.x - this.transform.position.x) == minDistance).ToList();
+                    result.AddRange(nearestBlocks);
+                }
             }
-            selectedObjectsClear();
+            selectedObjects = result;
             StartCoroutine(CatchModeCoroutine());
         }
 
@@ -157,11 +187,13 @@ public class PlayerController : MonoBehaviour
         {
             selectedObjectsClear();
         }
+
+        //Debug.Log(Input.GetAxis("Vertical"));
     }
 
     private void selectedObjectsClear()
     {
-        foreach (var obj in selectedObjects)
+        foreach (var obj in allStageBlocks)
             obj.GetComponent<StageBlockController>().ChangeColorHigh();
         selectedObjects.Clear();
     }
@@ -181,27 +213,59 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator CatchModeCoroutine()
     {
+        int maxCopylevel = 0;
+        int minCopylevel = 3;
+
+        foreach (var obj in selectedObjects)
+        {
+            int _copylevel = obj.GetComponent<StageBlockController>().copyLevel;
+            if (maxCopylevel <= _copylevel)
+                maxCopylevel = _copylevel;
+            if (minCopylevel >= _copylevel)
+                minCopylevel = _copylevel;
+        }
+
         while (true)
         {
             yield return null;
-            catchMode = true;
-            bool DoOnce = true;
-            if (DoOnce)
+            if (Input.GetAxis("Vertical") < 0 && selectedObjects.Count > 0 && maxCopylevel != 3)
             {
-                rb.isKinematic = true;
-                DoOnce = false;
+                foreach (var obj in selectedObjects)
+                {
+                    GameObject copyObject = Instantiate(obj, obj.transform.position, obj.transform.rotation, this.transform);
+                    copyObject.GetComponent<StageBlockController>().copyLevel++;
+                    copyObject.GetComponent<StageBlockController>().Initialize(this, obj.transform.position, view, maxBlockID);
+                    allStageBlocks.Add(copyObject);
+                }
+                //selectedObjectsClear();
+                catchMode = true;
+                moveVector = -1;
+                yield break;
             }
-            if (childCount <= 1)
+            Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
+            if (Input.GetAxis("Vertical") > 0 && selectedObjects.Count > 0 && minCopylevel != 0)
             {
-                rb.isKinematic = false;
-                catchMode = false;
-            }
-            if (catchMode == false)
-            {
-                catchBlockID = -1;
+                Debug.Log("hoge");
+                foreach (var obj in selectedObjects)
+                {
+                    obj.transform.SetParent(this.transform);
+                    obj.GetComponent<StageBlockController>().Initialize(this, obj.transform.position, view, maxBlockID);
+                    allStageBlocks.Remove(obj);
+                }
+                //selectedObjectsClear();
+                catchMode = true;
+                moveVector = 1;
                 yield break;
             }
         }
+    }
+
+    public void CatchModeFalse()
+    {
+        rb.isKinematic = false;
+        catchMode = false;
+        catchBlockID = -1;
+        moveVector = 0;
     }
 
     private IEnumerator RotationCoroutine(int rotationDirection)

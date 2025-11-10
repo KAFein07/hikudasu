@@ -1,24 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using UnityEngine;
 
 public class StageBlockController : MonoBehaviour
 {
     [SerializeField] private GameObject _player;
     [SerializeField] private Material[] _materials;
-    PlayerController _playerController;
-    MeshRenderer _meshRenderer;
+
     public int copyLevel = 0;
     public int blockID;
-    private Vector3 _objPos;
-    private int _view;
-    private Vector3 pos;
 
-    float moveValue = 1f;
-    bool end = false;
-    float diff;
-    int maxID;
+    private float moveValue = 1f;
+    private int _view;
+    private int maxID;
+    private Vector3 _objPos;
+    private Vector3 pos;
+    private PlayerController _playerController;
+    private MeshRenderer _meshRenderer;
+    private BoxCollider _boxCollider;
 
     private void Awake()
     {
@@ -37,11 +36,13 @@ public class StageBlockController : MonoBehaviour
     private void OnEnable()
     {
         _meshRenderer = GetComponent<MeshRenderer>();
+        _boxCollider = GetComponent<BoxCollider>();
     }
 
     public void Initialize(PlayerController playerController, Vector3 objPos, int view, int max)
     {
-        maxID = max;
+        //maxID = max;
+        Debug.Log("maxID = " + maxID);
         _playerController = playerController;
         _objPos = objPos;
         _view = view;
@@ -49,7 +50,6 @@ public class StageBlockController : MonoBehaviour
         {
             case 1:
                 _materials = _playerController.yellowMaterials;
-                
                 break;
             case 0:
                 _materials = _playerController.redMaterials;
@@ -61,6 +61,7 @@ public class StageBlockController : MonoBehaviour
 
     private IEnumerator BlockCroutine()
     {
+        _boxCollider.enabled = false;
         while (true)
         {
             pos = transform.position;
@@ -70,19 +71,12 @@ public class StageBlockController : MonoBehaviour
                     if (pos.z <= _objPos.z - moveValue)
                     {
                         pos.z = _objPos.z - moveValue;
-                        transform.SetParent(null, true);
-                        transform.position = pos;
-                        copyLevel++;
-                        blockID += maxID;
-                        ChangeColorHigh();
+                        BlockMoveFinish(true);
                         yield break;
                     }
                     else if (pos.z >= _objPos.z + moveValue)
                     {
-                        pos.z = _objPos.z + moveValue;
-                        transform.SetParent(null, true);
-                        transform.position = pos;
-                        ChangeColorHigh();
+                        BlockMoveFinish(false);
                         yield break;
                     }
                     break;
@@ -90,63 +84,58 @@ public class StageBlockController : MonoBehaviour
                     if (pos.x <= _objPos.x - moveValue)
                     {
                         pos.x = _objPos.x - moveValue;
-                        transform.SetParent(null, true);
-                        transform.position = pos;
-                        ChangeColorHigh();
+                        BlockMoveFinish(true);
                         yield break;
                     }
                     else if (pos.x >= _objPos.x + moveValue)
                     {
+                        BlockMoveFinish(false);
+                        yield break;
+                    }
+                    break;
+                case 3:
+                    if (pos.z >= _objPos.z + moveValue)
+                    {
+                        pos.z = _objPos.z + moveValue;
+                        BlockMoveFinish(true);
+                        yield break;
+                    }
+                    else if (pos.z <= _objPos.z - moveValue)
+                    {
+                        BlockMoveFinish(false);
+                        yield break;
+                    }
+                    break;
+                case 4:
+                    if (pos.x >= _objPos.x + moveValue)
+                    {
                         pos.x = _objPos.x + moveValue;
-                        transform.SetParent(null, true);
-                        transform.position = pos;
-                        ChangeColorHigh();
+                        BlockMoveFinish(true);
+                        yield break;
+                    }
+                    else if (pos.x <= _objPos.x - moveValue)
+                    {
+                        BlockMoveFinish(false);
                         yield break;
                     }
                     break;
             }
-            if (_view == 1 || _view == 3)
-            {
-                if (pos.z <= _objPos.z - moveValue)
-                {
-                    pos.z = _objPos.z - moveValue;
-                    transform.SetParent(null, true);
-                    transform.position = pos;
-                    copyLevel++;
-                    blockID += maxID;
-                    ChangeColorHigh();
-                    yield break;
-                }
-                else if (pos.z >= _objPos.z + moveValue)
-                {
-                    pos.z = _objPos.z + moveValue;
-                    transform.SetParent(null, true);
-                    transform.position = pos;
-                    ChangeColorHigh();
-                    yield break;
-                }
-            }
-            else
-            {
-                if (pos.x <= _objPos.x - moveValue)
-                {
-                    pos.x = _objPos.x - moveValue;
-                    transform.SetParent(null, true);
-                    transform.position = pos;
-                    ChangeColorHigh();
-                    yield break;
-                }
-                else if (pos.x >= _objPos.x + moveValue)
-                {
-                    pos.x = _objPos.x + moveValue;
-                    transform.SetParent(null, true);
-                    transform.position = pos;
-                    ChangeColorHigh();
-                    yield break;
-                }
-            }
             yield return null;
         }
+    }
+    private void BlockMoveFinish(bool _bool)
+    {
+        if (_bool)
+        {
+            transform.SetParent(null, true);
+            transform.position = pos;
+            _boxCollider.enabled = true;
+            //blockID += maxID;
+            //Debug.Log("blockID = " + blockID);
+        }
+        else
+            Destroy(this.gameObject);
+        _playerController.CatchModeFalse();
     }
 
     public void ChangeColorLow()
