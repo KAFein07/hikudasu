@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public bool canCatch = false;
     public int view = 1;
 
-    private float moveSpeed = 5;
+    private float moveSpeed = 2;
     private float rotateSpeed = 10;
     private float jumpPower = 250;
     private float horizontalInput;
@@ -133,9 +133,9 @@ public class PlayerController : MonoBehaviour
         }
 
         if (catchMode)
-            moveSpeed = 2.5f;
+            moveSpeed = 1.5f;
         else
-            moveSpeed = 5f;
+            moveSpeed = 2f;
 
         // 移動処理
         if (canMove)
@@ -146,7 +146,7 @@ public class PlayerController : MonoBehaviour
         camera.transform.position += scrollInput * camera.transform.forward * zoomSpeed * Time.deltaTime;
 
         // ジャンプ処理
-        if (Input.GetKeyDown(KeyCode.Space) && canJump)
+        if (Input.GetKeyDown(KeyCode.Space) && canJump && catchMode == false)
         {
             rb.AddForce(Vector3.up * jumpPower);
             canJump = false;
@@ -157,12 +157,12 @@ public class PlayerController : MonoBehaviour
             transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
 
         //視点変更
-        if (Input.GetKeyDown(KeyCode.E) && canRotate && catchMode == false)
+        if (Input.GetKeyDown(KeyCode.Q) && canRotate && catchMode == false)
         {
             StartCoroutine(RotationCoroutine(1));
             canRotate = false;
         }
-        if (Input.GetKeyDown(KeyCode.Q) && canRotate && catchMode == false)
+        if (Input.GetKeyDown(KeyCode.E) && canRotate && catchMode == false)
         {
             StartCoroutine(RotationCoroutine(-1));
             canRotate = false;
