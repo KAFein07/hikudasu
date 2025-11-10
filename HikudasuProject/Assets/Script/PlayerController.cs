@@ -34,6 +34,8 @@ public class PlayerController : MonoBehaviour
     private GameObject camera;
     private List<GameObject> allStageBlocks;
 
+    private Animator anim;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -48,12 +50,23 @@ public class PlayerController : MonoBehaviour
                 maxBlockID = _blockID;
         }
         maxBlockID *= 4;
+
+        Transform child = transform.Find("u");
+        anim = child.GetComponent<Animator>();
     }
 
     private void Update()
     {
-        // “ü—ÍŽæ“¾
-        scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        if (canJump == false)
+            anim.SetBool("jump", true);
+        else
+            anim.SetBool("jump", false);
+        if (moveDirection.magnitude > 0)
+            anim.SetBool("walk", true);
+        else
+            anim.SetBool("walk", false);
+            // “ü—ÍŽæ“¾
+            scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
         switch (view)
         {
@@ -182,6 +195,7 @@ public class PlayerController : MonoBehaviour
         {
             ObjectSelect(catchBlockID);
         }
+        
 
         if (Input.GetMouseButtonUp(0))
         {
@@ -196,6 +210,7 @@ public class PlayerController : MonoBehaviour
         foreach (var obj in allStageBlocks)
             obj.GetComponent<StageBlockController>().ChangeColorHigh();
         selectedObjects.Clear();
+        anim.SetBool("pull", false);
     }
 
     private void ObjectSelect(int ID)
@@ -240,6 +255,8 @@ public class PlayerController : MonoBehaviour
                 //selectedObjectsClear();
                 catchMode = true;
                 moveVector = -1;
+                Debug.Log("hiku");
+                anim.SetBool("pull",true);
                 yield break;
             }
             Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
@@ -255,6 +272,8 @@ public class PlayerController : MonoBehaviour
                 //selectedObjectsClear();
                 catchMode = true;
                 moveVector = 1;
+                Debug.Log("osu");
+                anim.SetBool("pull", true);
                 yield break;
             }
         }

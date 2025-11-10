@@ -2711,6 +2711,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6612707195371555543, guid: e4b9812d53a079d478c3ab9d918c5f74, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6870471645157655900, guid: e4b9812d53a079d478c3ab9d918c5f74, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.65
@@ -2777,10 +2781,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6058187176862310374, guid: e4b9812d53a079d478c3ab9d918c5f74, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1912012586}
-    - targetCorrespondingSourceObject: {fileID: 6058187176862310374, guid: e4b9812d53a079d478c3ab9d918c5f74, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1912012591}
+      addedObject: {fileID: 1912012590}
   m_SourcePrefab: {fileID: 100100000, guid: e4b9812d53a079d478c3ab9d918c5f74, type: 3}
 --- !u!1 &1423302308
 GameObject:
@@ -3546,60 +3547,33 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6058187176862310374, guid: e4b9812d53a079d478c3ab9d918c5f74, type: 3}
   m_PrefabInstance: {fileID: 1411864209}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1912012586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1912012585}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8fcf8a27e662134281886d817263c3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraCenter: {fileID: 1134612950}
-  lowLight: {fileID: 733552529}
-  resultText: {fileID: 1235751776}
-  yellowMaterials:
-  - {fileID: 2100000, guid: 6a7edc338ddbf7a44b74d707c442f5a1, type: 2}
-  - {fileID: 2100000, guid: 99244cf0e5d58d14588b4052a1a84310, type: 2}
-  - {fileID: 2100000, guid: 6ec6deaa2a4784146a3c1bb21f7221b5, type: 2}
-  - {fileID: 2100000, guid: 5a31a91a151b8aa49905821b94ee898e, type: 2}
-  redMaterials:
-  - {fileID: 2100000, guid: b7a2a0c757e72224495a9df1f46e0b5b, type: 2}
-  - {fileID: 2100000, guid: 7bb280dfed076ce4f94f64bc4b21b032, type: 2}
-  - {fileID: 2100000, guid: 78578b3a4eac2444599af5135c2f5283, type: 2}
-  - {fileID: 2100000, guid: f3dc8e323748add44ae99b6bab0bee86, type: 2}
-  selectedObjects: []
-  canCatch: 0
-  view: 1
 --- !u!4 &1912012589 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6870471645157655900, guid: e4b9812d53a079d478c3ab9d918c5f74, type: 3}
   m_PrefabInstance: {fileID: 1411864209}
   m_PrefabAsset: {fileID: 0}
---- !u!135 &1912012591
-SphereCollider:
+--- !u!95 &1912012590
+Animator:
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1912012585}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 0.7515515
-  m_Center: {x: -0.0000000026292424, y: 0.80412376, z: -0.0000000032467735}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 307d98b928f195b49b87876b57350af6, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &1920393879 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 38068648841493757, guid: f1f77b57fe94c82499a41a184bc65407, type: 3}
