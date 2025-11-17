@@ -19,7 +19,7 @@ public class StageBlockController : MonoBehaviour
     private MeshRenderer _meshRenderer;
     private BoxCollider _boxCollider;
 
-    private void Awake()
+    private void Start()
     {
         _playerController = _player.GetComponent<PlayerController>();
         switch (blockID)
@@ -70,7 +70,9 @@ public class StageBlockController : MonoBehaviour
                 case 1:
                     if (pos.z <= _objPos.z - moveValue)
                     {
+                        Debug.Log(_objPos);
                         pos.z = _objPos.z - moveValue;
+                        pos.x = _objPos.x;
                         BlockMoveFinish(true);
                         yield break;
                     }
@@ -83,7 +85,9 @@ public class StageBlockController : MonoBehaviour
                 case 2:
                     if (pos.x <= _objPos.x - moveValue)
                     {
+                        Debug.Log(_objPos);
                         pos.x = _objPos.x - moveValue;
+                        pos.z = _objPos.z;
                         BlockMoveFinish(true);
                         yield break;
                     }
@@ -96,7 +100,9 @@ public class StageBlockController : MonoBehaviour
                 case 3:
                     if (pos.z >= _objPos.z + moveValue)
                     {
+                        Debug.Log(_objPos);
                         pos.z = _objPos.z + moveValue;
+                        pos.x = _objPos.x;
                         BlockMoveFinish(true);
                         yield break;
                     }
@@ -109,7 +115,9 @@ public class StageBlockController : MonoBehaviour
                 case 4:
                     if (pos.x >= _objPos.x + moveValue)
                     {
+                        Debug.Log(_objPos);
                         pos.x = _objPos.x + moveValue;
+                        pos.z = _objPos.z;
                         BlockMoveFinish(true);
                         yield break;
                     }
@@ -128,6 +136,7 @@ public class StageBlockController : MonoBehaviour
         if (_bool)
         {
             transform.SetParent(null, true);
+            pos.y = _objPos.y;
             transform.position = pos;
             _boxCollider.enabled = true;
             //blockID += maxID;

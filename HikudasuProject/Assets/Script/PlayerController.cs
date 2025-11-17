@@ -92,18 +92,22 @@ public class PlayerController : MonoBehaviour
             switch (view)
             {
                 case 1:
+                    horizontalInput = 0;
                     if (verticalInput < 0)
                         verticalInput = 0;
                     break;
                 case 2:
+                    verticalInput = 0;
                     if (horizontalInput < 0)
                         horizontalInput = 0;
                     break;
                 case 3:
+                    horizontalInput = 0;
                     if (verticalInput > 0)
                         verticalInput = 0;
                     break;
                 case 4:
+                    verticalInput = 0;
                     if (horizontalInput > 0)
                         horizontalInput = 0;
                     break;
@@ -114,18 +118,22 @@ public class PlayerController : MonoBehaviour
             switch (view)
             {
                 case 1:
+                    horizontalInput = 0;
                     if (verticalInput > 0)
                         verticalInput = 0;
                     break;
                 case 2:
+                    verticalInput = 0;
                     if (horizontalInput > 0)
                         horizontalInput = 0;
                     break;
                 case 3:
+                    horizontalInput = 0;
                     if (verticalInput < 0)
                         verticalInput = 0;
                     break;
                 case 4:
+                    verticalInput = 0;
                     if (horizontalInput < 0)
                         horizontalInput = 0;
                     break;
