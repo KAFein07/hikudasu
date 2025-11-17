@@ -250,10 +250,11 @@ public class PlayerController : MonoBehaviour
 
     private void selectedObjectsClear()
     {
-        foreach (var obj in allStageBlocks)
-            obj.GetComponent<StageBlockController>().ChangeColorHigh();
-        selectedObjects.Clear();
         anim.SetBool("pull", false);
+        selectedObjects.Clear();
+        //foreach (var obj in allStageBlocks)
+           // obj.GetComponent<StageBlockController>().ChangeColorHigh();
+       
     }
 
     private void ObjectSelect(int ID)
@@ -373,6 +374,7 @@ public class PlayerController : MonoBehaviour
             lowLight.SetActive(true);
             resultText.SetActive(true);
             this.enabled = false;
+            StartCoroutine(ClearCoroutine());
         }
     }
     private void OnCollisionExit(Collision collision)
@@ -381,6 +383,29 @@ public class PlayerController : MonoBehaviour
         {
             catchBlockID = -1;
             canCatch = false;
+        }
+    }
+
+    private IEnumerator ClearCoroutine()
+    {
+        while (true)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                lowLight.SetActive(false);
+                resultText.SetActive(false);
+                this.enabled = true;
+                this.transform.position = new Vector3(0, 0.5f, -3);
+                this.transform.rotation = Quaternion.identity;
+                foreach (var obj in allStageBlocks)
+                {
+                    if (obj.GetComponent<StageBlockController>().copyLevel > 0)
+                        Destroy(obj);
+                }
+                scene = 1;
+                break;
+            }
+            yield return null;
         }
     }
     public void StartImg()
