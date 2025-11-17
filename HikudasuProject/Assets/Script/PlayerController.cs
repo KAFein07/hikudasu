@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
 
     public Material[] yellowMaterials;
     public Material[] redMaterials;
+    public Material[] greenMaterials;
+    public Material[] pinkMaterials;
     public List<GameObject> selectedObjects = new List<GameObject>();
     public bool canCatch = false;
     public int view = 1;
@@ -395,8 +397,6 @@ public class PlayerController : MonoBehaviour
                 lowLight.SetActive(false);
                 resultText.SetActive(false);
                 this.enabled = true;
-                this.transform.position = new Vector3(0, 0.5f, -3);
-                this.transform.rotation = Quaternion.identity;
                 foreach (var obj in allStageBlocks)
                 {
                     if (obj.GetComponent<StageBlockController>().copyLevel > 0)
@@ -430,9 +430,18 @@ public class PlayerController : MonoBehaviour
         stage2.SetActive(false);
         scene = 2;
         if (Stage == 1)
-            ;
-            
-            
+        {
+            this.transform.position = new Vector3(0, 0.5f, -3);
+            cameraCenter.position = new Vector3(0, 0, 0);
+        }
+        if (Stage == 2)
+        {
+            this.transform.position = new Vector3(17, 0.5f, -3);
+            cameraCenter.position = new Vector3(17, 0, 0);
+        }
+        this.transform.rotation = Quaternion.identity;
+
+
     }
     private void resetStege()
     {

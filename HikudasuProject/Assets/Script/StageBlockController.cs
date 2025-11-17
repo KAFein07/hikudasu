@@ -30,6 +30,12 @@ public class StageBlockController : MonoBehaviour
             case 2:
                 _materials = _playerController.redMaterials;
                 break;
+            case 3:
+                _materials = _playerController.greenMaterials;
+                break;
+            case 4:
+                _materials = _playerController.pinkMaterials;
+                break;
         }
     }
 
@@ -51,8 +57,14 @@ public class StageBlockController : MonoBehaviour
             case 1:
                 _materials = _playerController.yellowMaterials;
                 break;
-            case 0:
+            case 2:
                 _materials = _playerController.redMaterials;
+                break;
+            case 3:
+                _materials = _playerController.greenMaterials;
+                break;
+            case 0:
+                _materials = _playerController.pinkMaterials;
                 break;
         }
         ChangeColorHigh();
