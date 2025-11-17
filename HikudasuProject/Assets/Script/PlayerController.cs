@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -33,8 +34,15 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private GameObject camera;
     private List<GameObject> allStageBlocks;
+    private int scene = 0;
+    private int Stage = 1;
+    private int StageMax = 2;
+    public GameObject TitleImg;
+    public GameObject stage1;
+    public GameObject stage2;
 
     private Animator anim;
+
 
     private void Start()
     {
@@ -53,164 +61,191 @@ public class PlayerController : MonoBehaviour
 
         Transform child = transform.Find("u");
         anim = child.GetComponent<Animator>();
+        scene = 0;
+        Stage = 1;
+        TitleImg.SetActive(true);
+        stage1.SetActive(false);
+        stage2.SetActive(false);
     }
 
     private void Update()
     {
-        if (canJump == false)
-            anim.SetBool("jump", true);
-        else
-            anim.SetBool("jump", false);
-        if (moveDirection.magnitude > 0)
-            anim.SetBool("walk", true);
-        else
-            anim.SetBool("walk", false);
-            // 入力取得
-            scrollInput = Input.GetAxis("Mouse ScrollWheel");
-
-        switch (view)
-        {
-            case 1:
-                horizontalInput = Input.GetAxis("Horizontal");
-                verticalInput = Input.GetAxis("Vertical");
-                break;
-            case 2:
-                horizontalInput = Input.GetAxis("Vertical");
-                verticalInput = -Input.GetAxis("Horizontal");
-                break;
-            case 3:
-                horizontalInput = -Input.GetAxis("Horizontal");
-                verticalInput = -Input.GetAxis("Vertical");
-                break;
-            case 4:
-                horizontalInput = -Input.GetAxis("Vertical");
-                verticalInput = Input.GetAxis("Horizontal");
-                break;
-        }
-        if (moveVector == 1)
-        {
-            switch (view)
+       
+            switch (scene)
             {
-                case 1:
-                    horizontalInput = 0;
-                    if (verticalInput < 0)
-                        verticalInput = 0;
+                case 0://タイトル
+                    TitleImg.SetActive(true);
+                   break;
+                case 1://ステージ選択
+                if (Stage == 1)
+                {
+                    resetStege();
+                    stage1.SetActive(true);
+                }
+                if(Stage == 2)
+                {
+                    resetStege();
+                    stage2.SetActive(true);
+                }
                     break;
                 case 2:
-                    verticalInput = 0;
-                    if (horizontalInput < 0)
-                        horizontalInput = 0;
+                    if (canJump == false)
+                        anim.SetBool("jump", true);
+                    else
+                        anim.SetBool("jump", false);
+                    if (moveDirection.magnitude > 0)
+                        anim.SetBool("walk", true);
+                    else
+                        anim.SetBool("walk", false);
+                    // 入力取得
+                    scrollInput = Input.GetAxis("Mouse ScrollWheel");
+
+                    switch (view)
+                    {
+                        case 1:
+                            horizontalInput = Input.GetAxis("Horizontal");
+                            verticalInput = Input.GetAxis("Vertical");
+                            break;
+                        case 2:
+                            horizontalInput = Input.GetAxis("Vertical");
+                            verticalInput = -Input.GetAxis("Horizontal");
+                            break;
+                        case 3:
+                            horizontalInput = -Input.GetAxis("Horizontal");
+                            verticalInput = -Input.GetAxis("Vertical");
+                            break;
+                        case 4:
+                            horizontalInput = -Input.GetAxis("Vertical");
+                            verticalInput = Input.GetAxis("Horizontal");
+                            break;
+                    }
+                    if (moveVector == 1)
+                    {
+                        switch (view)
+                        {
+                            case 1:
+                                horizontalInput = 0;
+                                if (verticalInput < 0)
+                                    verticalInput = 0;
+                                break;
+                            case 2:
+                                verticalInput = 0;
+                                if (horizontalInput < 0)
+                                    horizontalInput = 0;
+                                break;
+                            case 3:
+                                horizontalInput = 0;
+                                if (verticalInput > 0)
+                                    verticalInput = 0;
+                                break;
+                            case 4:
+                                verticalInput = 0;
+                                if (horizontalInput > 0)
+                                    horizontalInput = 0;
+                                break;
+                        }
+                    }
+                    else if (moveVector == -1)
+                    {
+                        switch (view)
+                        {
+                            case 1:
+                                horizontalInput = 0;
+                                if (verticalInput > 0)
+                                    verticalInput = 0;
+                                break;
+                            case 2:
+                                verticalInput = 0;
+                                if (horizontalInput > 0)
+                                    horizontalInput = 0;
+                                break;
+                            case 3:
+                                horizontalInput = 0;
+                                if (verticalInput < 0)
+                                    verticalInput = 0;
+                                break;
+                            case 4:
+                                verticalInput = 0;
+                                if (horizontalInput < 0)
+                                    horizontalInput = 0;
+                                break;
+                        }
+                    }
+
+                    if (catchMode)
+                        moveSpeed = 1.5f;
+                    else
+                        moveSpeed = 2f;
+
+                    // 移動処理
+                    if (canMove)
+                    {
+                        moveDirection = new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0, verticalInput * moveSpeed * Time.deltaTime);
+                        transform.position += moveDirection;
+                    }
+                    camera.transform.position += scrollInput * camera.transform.forward * zoomSpeed * Time.deltaTime;
+
+                    // ジャンプ処理
+                    if (Input.GetKeyDown(KeyCode.Space) && canJump && catchMode == false)
+                    {
+                        rb.AddForce(Vector3.up * jumpPower);
+                        canJump = false;
+                    }
+
+                    // 滑らかな向き変更
+                    if ((horizontalInput != 0 || verticalInput != 0) && (catchMode == false))
+                        transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
+
+                    //視点変更
+                    if (Input.GetKeyDown(KeyCode.Q) && canRotate && catchMode == false)
+                    {
+                        StartCoroutine(RotationCoroutine(1));
+                        canRotate = false;
+                    }
+                    if (Input.GetKeyDown(KeyCode.E) && canRotate && catchMode == false)
+                    {
+                        StartCoroutine(RotationCoroutine(-1));
+                        canRotate = false;
+                    }
+
+                    if (selectedObjects.Count > 0 && Input.GetMouseButtonDown(1))
+                    {
+                        var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
+                        List<GameObject> result = new List<GameObject>();
+                        foreach (var group in grouped)
+                        {
+                            if (view == 1 || view == 3)
+                            {
+                                float minDistance = group.Min(b => Mathf.Abs(b.transform.position.z - this.transform.position.z));
+                                var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.z - this.transform.position.z) == minDistance).ToList();
+                                result.AddRange(nearestBlocks);
+                            }
+                            else
+                            {
+                                float minDistance = group.Min(b => Mathf.Abs(b.transform.position.x - this.transform.position.x));
+                                var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.x - this.transform.position.x) == minDistance).ToList();
+                                result.AddRange(nearestBlocks);
+                            }
+                        }
+                        selectedObjects = result;
+                        StartCoroutine(CatchModeCoroutine());
+                    }
+
+                    if (canCatch && Input.GetMouseButtonDown(0) && (catchMode == false))
+                    {
+                        ObjectSelect(catchBlockID);
+                    }
+
+
+                    if (Input.GetMouseButtonUp(0))
+                    {
+                        selectedObjectsClear();
+                    }
+
+                    //Debug.Log(Input.GetAxis("Vertical"));
                     break;
-                case 3:
-                    horizontalInput = 0;
-                    if (verticalInput > 0)
-                        verticalInput = 0;
-                    break;
-                case 4:
-                    verticalInput = 0;
-                    if (horizontalInput > 0)
-                        horizontalInput = 0;
-                    break;
+
             }
-        }
-        else if (moveVector == -1)
-        {
-            switch (view)
-            {
-                case 1:
-                    horizontalInput = 0;
-                    if (verticalInput > 0)
-                        verticalInput = 0;
-                    break;
-                case 2:
-                    verticalInput = 0;
-                    if (horizontalInput > 0)
-                        horizontalInput = 0;
-                    break;
-                case 3:
-                    horizontalInput = 0;
-                    if (verticalInput < 0)
-                        verticalInput = 0;
-                    break;
-                case 4:
-                    verticalInput = 0;
-                    if (horizontalInput < 0)
-                        horizontalInput = 0;
-                    break;
-            }
-        }
-
-        if (catchMode)
-            moveSpeed = 1.5f;
-        else
-            moveSpeed = 2f;
-
-        // 移動処理
-        if (canMove)
-        {
-            moveDirection = new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0, verticalInput * moveSpeed * Time.deltaTime);
-            transform.position += moveDirection;
-        }
-        camera.transform.position += scrollInput * camera.transform.forward * zoomSpeed * Time.deltaTime;
-
-        // ジャンプ処理
-        if (Input.GetKeyDown(KeyCode.Space) && canJump && catchMode == false)
-        {
-            rb.AddForce(Vector3.up * jumpPower);
-            canJump = false;
-        }
-
-        // 滑らかな向き変更
-        if ((horizontalInput != 0 || verticalInput != 0) && (catchMode == false))
-            transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
-
-        //視点変更
-        if (Input.GetKeyDown(KeyCode.Q) && canRotate && catchMode == false)
-        {
-            StartCoroutine(RotationCoroutine(1));
-            canRotate = false;
-        }
-        if (Input.GetKeyDown(KeyCode.E) && canRotate && catchMode == false)
-        {
-            StartCoroutine(RotationCoroutine(-1));
-            canRotate = false;
-        }
-
-        if (selectedObjects.Count > 0 && Input.GetMouseButtonDown(1))
-        {
-            var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
-            List<GameObject> result = new List<GameObject>();
-            foreach (var group in grouped)
-            {
-                if (view == 1 || view == 3)
-                {
-                    float minDistance = group.Min(b => Mathf.Abs(b.transform.position.z - this.transform.position.z));
-                    var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.z - this.transform.position.z) == minDistance).ToList();
-                    result.AddRange(nearestBlocks);
-                }
-                else
-                {
-                    float minDistance = group.Min(b => Mathf.Abs(b.transform.position.x - this.transform.position.x));
-                    var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.x - this.transform.position.x) == minDistance).ToList();
-                    result.AddRange(nearestBlocks);
-                }
-            }
-            selectedObjects = result;
-            StartCoroutine(CatchModeCoroutine());
-        }
-
-        if (canCatch && Input.GetMouseButtonDown(0) && (catchMode == false))
-        {
-            ObjectSelect(catchBlockID);
-        }
-        
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            selectedObjectsClear();
-        }
-
-        //Debug.Log(Input.GetAxis("Vertical"));
     }
 
     private void selectedObjectsClear()
@@ -347,5 +382,36 @@ public class PlayerController : MonoBehaviour
             catchBlockID = -1;
             canCatch = false;
         }
+    }
+    public void StartImg()
+    {
+        TitleImg.SetActive(false);
+        stage1.SetActive(true);
+        scene = 1;
+    }
+
+    public void changeStageup()
+    {
+        if(Stage < StageMax)Stage++;
+    }
+    public void changeStagedown()
+    {
+        if(Stage > 1)Stage--;
+    }
+
+    public void Startstage()
+    {
+        stage1.SetActive(false);
+        stage2.SetActive(false);
+        scene = 2;
+        if (Stage == 1)
+            ;
+            
+            
+    }
+    private void resetStege()
+    {
+        stage1.SetActive(false);
+        stage2.SetActive(false);
     }
 }
