@@ -1542,7 +1542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 194a16a1ca845e349a4f382932f5ad99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 1973290237}
   _materials: []
   copyLevel: 0
   blockID: 4
@@ -2016,7 +2016,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 194a16a1ca845e349a4f382932f5ad99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 1973290237}
   _materials: []
   copyLevel: 0
   blockID: 4
@@ -7085,7 +7085,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 194a16a1ca845e349a4f382932f5ad99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 1973290237}
   _materials: []
   copyLevel: 0
   blockID: 4
@@ -8215,8 +8215,16 @@ MonoBehaviour:
   - {fileID: 2100000, guid: a4aec4ce6acc9944fb2c2dfeedd8205d, type: 2}
   - {fileID: 2100000, guid: 1f00abd841beea546a87c19ceb555cd9, type: 2}
   - {fileID: 2100000, guid: cdd22fd2ba8c3184fbc5fc87ae8bb43d, type: 2}
-  greenMaterials: []
-  pinkMaterials: []
+  greenMaterials:
+  - {fileID: 2100000, guid: 9f87752c172c2b74db124a2cff61cf8b, type: 2}
+  - {fileID: 2100000, guid: 2129b90da1320364e8370aa77cb52f76, type: 2}
+  - {fileID: 2100000, guid: f73bf78653d8ca64fa07620183889270, type: 2}
+  - {fileID: 2100000, guid: 4a02a55a0a1da7345bf2a75317b62e5e, type: 2}
+  pinkMaterials:
+  - {fileID: 2100000, guid: 12ab2bbc1404caa4bb77236544e69350, type: 2}
+  - {fileID: 2100000, guid: 97db0133583b724469a56594fc86a39c, type: 2}
+  - {fileID: 2100000, guid: df9b8723164355740827b30623532ee8, type: 2}
+  - {fileID: 2100000, guid: 56bc4fa59a370eb46b0eb66f2b81544d, type: 2}
   selectedObjects: []
   canCatch: 0
   view: 1
@@ -8426,7 +8434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 194a16a1ca845e349a4f382932f5ad99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 1973290237}
   _materials: []
   copyLevel: 0
   blockID: 4
@@ -9072,7 +9080,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 194a16a1ca845e349a4f382932f5ad99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 1973290237}
   _materials: []
   copyLevel: 0
   blockID: 4
@@ -9499,7 +9507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 194a16a1ca845e349a4f382932f5ad99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 1973290237}
   _materials: []
   copyLevel: 0
   blockID: 4
