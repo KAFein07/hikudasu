@@ -400,7 +400,10 @@ public class PlayerController : MonoBehaviour
                 foreach (var obj in allStageBlocks)
                 {
                     if (obj.GetComponent<StageBlockController>().copyLevel > 0)
+                    {
+                        allStageBlocks.Remove(obj);
                         Destroy(obj);
+                    }
                 }
                 scene = 1;
                 break;
