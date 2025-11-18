@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -36,12 +37,6 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private GameObject camera;
     private List<GameObject> allStageBlocks;
-    private int scene = 0;
-    private int Stage = 1;
-    private int StageMax = 2;
-    public GameObject TitleImg;
-    public GameObject stage1;
-    public GameObject stage2;
 
     private Animator anim;
 
@@ -63,34 +58,10 @@ public class PlayerController : MonoBehaviour
 
         Transform child = transform.Find("u");
         anim = child.GetComponent<Animator>();
-        scene = 0;
-        Stage = 1;
-        TitleImg.SetActive(true);
-        stage1.SetActive(false);
-        stage2.SetActive(false);
     }
 
     private void Update()
     {
-       
-            switch (scene)
-            {
-                case 0://タイトル
-                    TitleImg.SetActive(true);
-                   break;
-                case 1://ステージ選択
-                if (Stage == 1)
-                {
-                    resetStege();
-                    stage1.SetActive(true);
-                }
-                if(Stage == 2)
-                {
-                    resetStege();
-                    stage2.SetActive(true);
-                }
-                    break;
-                case 2:
                     if (canJump == false)
                         anim.SetBool("jump", true);
                     else
@@ -210,6 +181,7 @@ public class PlayerController : MonoBehaviour
                         canRotate = false;
                     }
 
+                    /*
                     if (selectedObjects.Count > 0 && Input.GetMouseButtonDown(1))
                     {
                         var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
@@ -231,7 +203,7 @@ public class PlayerController : MonoBehaviour
                         }
                         selectedObjects = result;
                         StartCoroutine(CatchModeCoroutine());
-                    }
+                    }*/
 
                     if (canCatch && Input.GetMouseButtonDown(0) && (catchMode == false))
                     {
@@ -239,15 +211,12 @@ public class PlayerController : MonoBehaviour
                     }
 
 
-                    if (Input.GetMouseButtonUp(0))
+                    if (Input.GetMouseButtonUp(0) && (catchMode == false))
                     {
                         selectedObjectsClear();
                     }
 
                     //Debug.Log(Input.GetAxis("Vertical"));
-                    break;
-
-            }
     }
 
     private void selectedObjectsClear()
@@ -270,6 +239,25 @@ public class PlayerController : MonoBehaviour
                 obj.GetComponent<StageBlockController>().ChangeColorLow();
             }
         }
+        var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
+        List<GameObject> result = new List<GameObject>();
+        foreach (var group in grouped)
+        {
+            if (view == 1 || view == 3)
+            {
+                float minDistance = group.Min(b => Mathf.Abs(b.transform.position.z - this.transform.position.z));
+                var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.z - this.transform.position.z) == minDistance).ToList();
+                result.AddRange(nearestBlocks);
+            }
+            else
+            {
+                float minDistance = group.Min(b => Mathf.Abs(b.transform.position.x - this.transform.position.x));
+                var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.x - this.transform.position.x) == minDistance).ToList();
+                result.AddRange(nearestBlocks);
+            }
+        }
+        selectedObjects = result;
+        StartCoroutine(CatchModeCoroutine());
     }
 
     private IEnumerator CatchModeCoroutine()
@@ -285,6 +273,10 @@ public class PlayerController : MonoBehaviour
             if (minCopylevel >= _copylevel)
                 minCopylevel = _copylevel;
         }
+        catchMode = true;
+        anim.SetBool("pull", true);
+
+        yield return new WaitForSeconds(0.2f);
 
         while (true)
         {
@@ -299,10 +291,8 @@ public class PlayerController : MonoBehaviour
                     allStageBlocks.Add(copyObject);
                 }
                 //selectedObjectsClear();
-                catchMode = true;
                 moveVector = -1;
                 Debug.Log("hiku");
-                anim.SetBool("pull",true);
                 yield break;
             }
             Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
@@ -316,10 +306,8 @@ public class PlayerController : MonoBehaviour
                     allStageBlocks.Remove(obj);
                 }
                 //selectedObjectsClear();
-                catchMode = true;
                 moveVector = 1;
                 Debug.Log("osu");
-                anim.SetBool("pull", true);
                 yield break;
             }
         }
@@ -394,23 +382,15 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                SceneManager.LoadScene("menu");
                 lowLight.SetActive(false);
                 resultText.SetActive(false);
                 this.enabled = true;
-                foreach (var obj in allStageBlocks)
-                {
-                    if (obj.GetComponent<StageBlockController>().copyLevel > 0)
-                    {
-                        allStageBlocks.Remove(obj);
-                        Destroy(obj);
-                    }
-                }
-                scene = 1;
-                break;
             }
             yield return null;
         }
     }
+    /*
     public void StartImg()
     {
         TitleImg.SetActive(false);
@@ -451,4 +431,5 @@ public class PlayerController : MonoBehaviour
         stage1.SetActive(false);
         stage2.SetActive(false);
     }
+    */
 }
