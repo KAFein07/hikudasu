@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
     private bool isPaused = false;
     public string scene;
     public int esc = 0;
+    private bool fin = false;
 
     public GameObject escBtn;
 
@@ -63,10 +64,12 @@ public class PlayerController : MonoBehaviour
 
         Transform child = transform.Find("u");
         anim = child.GetComponent<Animator>();
+        fin = false;
     }
 
     private void Update()
     {
+        if (fin) Application.Quit();
         if (Input.GetKey(KeyCode.Escape))
         {
             esc = 1;
@@ -440,6 +443,11 @@ public class PlayerController : MonoBehaviour
     public void reTry()
     {
         SceneManager.LoadScene(scene);
+    }
+
+    public void Fin()
+    {
+        fin = true;
     }
     /*
     public void StartImg()
