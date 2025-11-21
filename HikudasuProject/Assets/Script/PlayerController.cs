@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     private bool canRotate = true;
     private bool canJump;
     private bool catchMode;
+    private bool stop;
     private int catchBlockID = -1;
     private int maxBlockID = 0;
     private int moveVector;
@@ -174,10 +175,12 @@ public class PlayerController : MonoBehaviour
                         }
                     }
 
-                    if (catchMode)
-                        moveSpeed = 1.5f;
-                    else
-                        moveSpeed = 2f;
+                if (catchMode)
+                    moveSpeed = 1.5f;
+                else if (stop)
+                    moveSpeed = 0f;
+                else
+                    moveSpeed = 2f;
 
                     // ˆÚ“®ˆ—
                     if (canMove)
@@ -210,6 +213,7 @@ public class PlayerController : MonoBehaviour
                         canRotate = false;
                     }
 
+                    /*
                     if (selectedObjects.Count > 0 && Input.GetMouseButtonDown(1))
                     {
                         var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
@@ -231,7 +235,7 @@ public class PlayerController : MonoBehaviour
                         }
                         selectedObjects = result;
                         StartCoroutine(CatchModeCoroutine());
-                    }
+                    }*/
 
                     if (canCatch && Input.GetMouseButtonDown(0) && (catchMode == false))
                     {
@@ -239,7 +243,7 @@ public class PlayerController : MonoBehaviour
                     }
 
 
-                    if (Input.GetMouseButtonUp(0))
+                    if (Input.GetMouseButtonUp(0) && (catchMode == false))
                     {
                         selectedObjectsClear();
                     }
@@ -270,6 +274,25 @@ public class PlayerController : MonoBehaviour
                 obj.GetComponent<StageBlockController>().ChangeColorLow();
             }
         }
+        var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
+        List<GameObject> result = new List<GameObject>();
+        foreach (var group in grouped)
+        {
+            if (view == 1 || view == 3)
+            {
+                float minDistance = group.Min(b => Mathf.Abs(b.transform.position.z - this.transform.position.z));
+                var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.z - this.transform.position.z) == minDistance).ToList();
+                result.AddRange(nearestBlocks);
+            }
+            else
+            {
+                float minDistance = group.Min(b => Mathf.Abs(b.transform.position.x - this.transform.position.x));
+                var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.x - this.transform.position.x) == minDistance).ToList();
+                result.AddRange(nearestBlocks);
+            }
+        }
+        selectedObjects = result;
+        StartCoroutine(CatchModeCoroutine());
     }
 
     private IEnumerator CatchModeCoroutine()
@@ -285,7 +308,10 @@ public class PlayerController : MonoBehaviour
             if (minCopylevel >= _copylevel)
                 minCopylevel = _copylevel;
         }
+        catchMode = true;
+        anim.SetBool("pull", true);
 
+        yield return new WaitForSeconds(0.2f);
         while (true)
         {
             yield return null;
@@ -299,16 +325,16 @@ public class PlayerController : MonoBehaviour
                     allStageBlocks.Add(copyObject);
                 }
                 //selectedObjectsClear();
-                catchMode = true;
+                //catchMode = true;
                 moveVector = -1;
-                Debug.Log("hiku");
-                anim.SetBool("pull",true);
+                //Debug.Log("hiku");
+                //anim.SetBool("pull",true);
                 yield break;
             }
-            Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
+            //Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
             if (Input.GetAxis("Vertical") > 0 && selectedObjects.Count > 0 && minCopylevel != 0)
             {
-                Debug.Log("hoge");
+                //Debug.Log("hoge");
                 foreach (var obj in selectedObjects)
                 {
                     obj.transform.SetParent(this.transform);
@@ -316,10 +342,10 @@ public class PlayerController : MonoBehaviour
                     allStageBlocks.Remove(obj);
                 }
                 //selectedObjectsClear();
-                catchMode = true;
+                //catchMode = true;
                 moveVector = 1;
-                Debug.Log("osu");
-                anim.SetBool("pull", true);
+                //Debug.Log("osu");
+                //anim.SetBool("pull", true);
                 yield break;
             }
         }
@@ -331,6 +357,7 @@ public class PlayerController : MonoBehaviour
         catchMode = false;
         catchBlockID = -1;
         moveVector = 0;
+        anim.SetBool("pull", false);
     }
 
     private IEnumerator RotationCoroutine(int rotationDirection)
@@ -400,7 +427,10 @@ public class PlayerController : MonoBehaviour
                 foreach (var obj in allStageBlocks)
                 {
                     if (obj.GetComponent<StageBlockController>().copyLevel > 0)
-                        Destroy(obj);
+                    {
+                        //allStageBlocks.Remove(obj);
+                        Destroy(obj);                        
+                    }
                 }
                 scene = 1;
                 break;
