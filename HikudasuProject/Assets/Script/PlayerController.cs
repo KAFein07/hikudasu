@@ -37,6 +37,11 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private GameObject camera;
     private List<GameObject> allStageBlocks;
+    private bool isPaused = false;
+    public string scene;
+    public int esc = 0;
+
+    public GameObject escBtn;
 
     private Animator anim;
 
@@ -62,10 +67,22 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            esc = 1;
+            StPause();
+        }
+
+        if (isPaused)
+        {
+            StPause();
+            return;
+        }
+        
                     if (canJump == false)
-                        anim.SetBool("jump", true);
-                    else
-                        anim.SetBool("jump", false);
+            anim.SetBool("jump", true);
+        else
+            anim.SetBool("jump", false);
                     if (moveDirection.magnitude > 0)
                         anim.SetBool("walk", true);
                     else
@@ -389,6 +406,40 @@ public class PlayerController : MonoBehaviour
             }
             yield return null;
         }
+    }
+
+    public void StPause()
+    {
+        isPaused = true;
+        StartCoroutine(UnPause());
+    }
+
+    IEnumerator UnPause()
+    {
+        if (esc == 1)
+        {
+            escBtn.SetActive(true);
+        }
+        else
+        {
+            escBtn.SetActive(false);
+            isPaused = false;
+            yield return null;
+        }
+
+    }
+
+    public void back()
+    {
+        esc = 0;
+    }
+    public void backMenu()
+    {
+        SceneManager.LoadScene("menu");
+    }
+    public void reTry()
+    {
+        SceneManager.LoadScene(scene);
     }
     /*
     public void StartImg()
