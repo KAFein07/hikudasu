@@ -274,7 +274,7 @@ public class PlayerController : MonoBehaviour
                 obj.GetComponent<StageBlockController>().ChangeColorLow();
             }
         }
-        var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
+        var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList(); 
         List<GameObject> result = new List<GameObject>();
         foreach (var group in grouped)
         {
