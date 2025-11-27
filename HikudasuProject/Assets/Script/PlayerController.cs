@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -30,19 +29,20 @@ public class PlayerController : MonoBehaviour
     private bool canRotate = true;
     private bool canJump;
     private bool catchMode;
+    private bool stop;
     private int catchBlockID = -1;
     private int maxBlockID = 0;
     private int moveVector;
     private Vector3 moveDirection;
     private Rigidbody rb;
-    private GameObject camera;
+    private new GameObject camera;
     private List<GameObject> allStageBlocks;
-    private bool isPaused = false;
-    public string scene;
-    public int esc = 0;
-    private bool fin = false;
-
-    public GameObject escBtn;
+    private int scene = 0;
+    private int Stage = 1;
+    private int StageMax = 2;
+    public GameObject TitleImg;
+    public GameObject stage1;
+    public GameObject stage2;
 
     private Animator anim;
 
@@ -64,28 +64,38 @@ public class PlayerController : MonoBehaviour
 
         Transform child = transform.Find("u");
         anim = child.GetComponent<Animator>();
-        fin = false;
+        scene = 0;
+        Stage = 1;
+        TitleImg.SetActive(true);
+        stage1.SetActive(false);
+        stage2.SetActive(false);
     }
 
     private void Update()
     {
-        if (fin) Application.Quit();
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            esc = 1;
-            StPause();
-        }
-
-        if (isPaused)
-        {
-            StPause();
-            return;
-        }
-        
+       
+            switch (scene)
+            {
+                case 0://タイトル
+                    TitleImg.SetActive(true);
+                   break;
+                case 1://ステージ選択
+                if (Stage == 1)
+                {
+                    resetStege();
+                    stage1.SetActive(true);
+                }
+                if(Stage == 2)
+                {
+                    resetStege();
+                    stage2.SetActive(true);
+                }
+                    break;
+                case 2:
                     if (canJump == false)
-            anim.SetBool("jump", true);
-        else
-            anim.SetBool("jump", false);
+                        anim.SetBool("jump", true);
+                    else
+                        anim.SetBool("jump", false);
                     if (moveDirection.magnitude > 0)
                         anim.SetBool("walk", true);
                     else
@@ -165,10 +175,12 @@ public class PlayerController : MonoBehaviour
                         }
                     }
 
-                    if (catchMode)
-                        moveSpeed = 1.5f;
-                    else
-                        moveSpeed = 2f;
+                if (catchMode)
+                    moveSpeed = 1.5f;
+                else if (stop)
+                    moveSpeed = 0f;
+                else
+                    moveSpeed = 2f;
 
                     // 移動処理
                     if (canMove)
@@ -237,6 +249,9 @@ public class PlayerController : MonoBehaviour
                     }
 
                     //Debug.Log(Input.GetAxis("Vertical"));
+                    break;
+
+            }
     }
 
     private void selectedObjectsClear()
@@ -259,7 +274,7 @@ public class PlayerController : MonoBehaviour
                 obj.GetComponent<StageBlockController>().ChangeColorLow();
             }
         }
-        var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList();
+        var grouped = selectedObjects.GroupBy(b => Mathf.Round(b.transform.position.y * 100f) / 100f).ToList(); 
         List<GameObject> result = new List<GameObject>();
         foreach (var group in grouped)
         {
@@ -297,7 +312,6 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("pull", true);
 
         yield return new WaitForSeconds(0.2f);
-
         while (true)
         {
             yield return null;
@@ -311,14 +325,16 @@ public class PlayerController : MonoBehaviour
                     allStageBlocks.Add(copyObject);
                 }
                 //selectedObjectsClear();
+                //catchMode = true;
                 moveVector = -1;
-                Debug.Log("hiku");
+                //Debug.Log("hiku");
+                //anim.SetBool("pull",true);
                 yield break;
             }
-            Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
+            //Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
             if (Input.GetAxis("Vertical") > 0 && selectedObjects.Count > 0 && minCopylevel != 0)
             {
-                Debug.Log("hoge");
+                //Debug.Log("hoge");
                 foreach (var obj in selectedObjects)
                 {
                     obj.transform.SetParent(this.transform);
@@ -326,8 +342,10 @@ public class PlayerController : MonoBehaviour
                     allStageBlocks.Remove(obj);
                 }
                 //selectedObjectsClear();
+                //catchMode = true;
                 moveVector = 1;
-                Debug.Log("osu");
+                //Debug.Log("osu");
+                //anim.SetBool("pull", true);
                 yield break;
             }
         }
@@ -339,6 +357,7 @@ public class PlayerController : MonoBehaviour
         catchMode = false;
         catchBlockID = -1;
         moveVector = 0;
+        anim.SetBool("pull", false);
     }
 
     private IEnumerator RotationCoroutine(int rotationDirection)
@@ -402,54 +421,23 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene("menu");
                 lowLight.SetActive(false);
                 resultText.SetActive(false);
                 this.enabled = true;
+                foreach (var obj in allStageBlocks)
+                {
+                    if (obj.GetComponent<StageBlockController>().copyLevel > 0)
+                    {
+                        //allStageBlocks.Remove(obj);
+                        Destroy(obj);                        
+                    }
+                }
+                scene = 1;
+                break;
             }
             yield return null;
         }
     }
-
-    public void StPause()
-    {
-        isPaused = true;
-        StartCoroutine(UnPause());
-    }
-
-    IEnumerator UnPause()
-    {
-        if (esc == 1)
-        {
-            escBtn.SetActive(true);
-        }
-        else
-        {
-            escBtn.SetActive(false);
-            isPaused = false;
-            yield return null;
-        }
-
-    }
-
-    public void back()
-    {
-        esc = 0;
-    }
-    public void backMenu()
-    {
-        SceneManager.LoadScene("menu");
-    }
-    public void reTry()
-    {
-        SceneManager.LoadScene(scene);
-    }
-
-    public void Fin()
-    {
-        fin = true;
-    }
-    /*
     public void StartImg()
     {
         TitleImg.SetActive(false);
@@ -490,5 +478,4 @@ public class PlayerController : MonoBehaviour
         stage1.SetActive(false);
         stage2.SetActive(false);
     }
-    */
 }
