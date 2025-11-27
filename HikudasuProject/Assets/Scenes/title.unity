@@ -8033,7 +8033,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -109.91}
+  m_AnchoredPosition: {x: 0, y: -110}
   m_SizeDelta: {x: 542.5, y: 175.41}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1951757241
@@ -8305,6 +8305,9 @@ MonoBehaviour:
   selectedObjects: []
   canCatch: 0
   view: 1
+  scene: 
+  esc: 0
+  escBtn: {fileID: 0}
 --- !u!114 &1973290246
 MonoBehaviour:
   m_ObjectHideFlags: 0
