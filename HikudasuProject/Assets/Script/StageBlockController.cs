@@ -82,6 +82,7 @@ public class StageBlockController : MonoBehaviour
                 case 1:
                     if (pos.z <= _objPos.z - moveValue)
                     {
+                        _player.GetComponent<PlayerController>().rbFin();
                         Debug.Log(_objPos);
                         pos.z = _objPos.z - moveValue;
                         pos.x = _objPos.x;
@@ -90,6 +91,7 @@ public class StageBlockController : MonoBehaviour
                     }
                     else if (pos.z >= _objPos.z + moveValue)
                     {
+                        _player.GetComponent<PlayerController>().rbFin();
                         BlockMoveFinish(false);
                         yield break;
                     }
@@ -97,6 +99,7 @@ public class StageBlockController : MonoBehaviour
                 case 2:
                     if (pos.x <= _objPos.x - moveValue)
                     {
+                        _player.GetComponent<PlayerController>().rbFin();
                         Debug.Log(_objPos);
                         pos.x = _objPos.x - moveValue;
                         pos.z = _objPos.z;
@@ -105,6 +108,7 @@ public class StageBlockController : MonoBehaviour
                     }
                     else if (pos.x >= _objPos.x + moveValue)
                     {
+                        _player.GetComponent<PlayerController>().rbFin();
                         BlockMoveFinish(false);
                         yield break;
                     }
@@ -112,6 +116,7 @@ public class StageBlockController : MonoBehaviour
                 case 3:
                     if (pos.z >= _objPos.z + moveValue)
                     {
+                        _player.GetComponent<PlayerController>().rbFin();
                         Debug.Log(_objPos);
                         pos.z = _objPos.z + moveValue;
                         pos.x = _objPos.x;
@@ -120,6 +125,7 @@ public class StageBlockController : MonoBehaviour
                     }
                     else if (pos.z <= _objPos.z - moveValue)
                     {
+                        _player.GetComponent<PlayerController>().rbFin();
                         BlockMoveFinish(false);
                         yield break;
                     }
@@ -127,6 +133,7 @@ public class StageBlockController : MonoBehaviour
                 case 4:
                     if (pos.x >= _objPos.x + moveValue)
                     {
+                        _player.GetComponent<PlayerController>().rbFin();
                         Debug.Log(_objPos);
                         pos.x = _objPos.x + moveValue;
                         pos.z = _objPos.z;
@@ -135,6 +142,8 @@ public class StageBlockController : MonoBehaviour
                     }
                     else if (pos.x <= _objPos.x - moveValue)
                     {
+                        Debug.Log("owari");
+                        _player.GetComponent<PlayerController>().rbFin();
                         BlockMoveFinish(false);
                         yield break;
                     }
