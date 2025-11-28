@@ -18,7 +18,7 @@ public class StageGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        stage = 1;
+        stage = 0;
         stage1.SetActive(true);
         stage2.SetActive(false);
         stage3.SetActive(false);
@@ -90,10 +90,29 @@ public class StageGenerator : MonoBehaviour
     {
         SceneManager.LoadScene("stage1");
     }
-
     public void Stage2()
     {
         SceneManager.LoadScene("stage2");
+    }
+    public void Stage3()
+    {
+        SceneManager.LoadScene("stage3");
+    }
+    public void Stage4()
+    {
+        SceneManager.LoadScene("stage4");
+    }public void Stage5()
+    {
+        SceneManager.LoadScene("stage5");
+    }public void Stage6()
+    {
+        SceneManager.LoadScene("stage6");
+    }public void Stage7()
+    {
+        SceneManager.LoadScene("stage7");
+    }public void Stage8()
+    {
+        SceneManager.LoadScene("stage8");
     }
 
     public void select1()

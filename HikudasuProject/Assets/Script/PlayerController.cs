@@ -69,6 +69,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if(canCatch == false)
+            rb.useGravity = true;
         if (fin) Application.Quit();
         if (Input.GetKey(KeyCode.Escape))
         {
@@ -176,7 +178,9 @@ public class PlayerController : MonoBehaviour
                         moveDirection = new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0, verticalInput * moveSpeed * Time.deltaTime);
                         transform.position += moveDirection;
                     }
-                    camera.transform.position += scrollInput * camera.transform.forward * zoomSpeed * Time.deltaTime;
+                        //if(camera.transform.position.y > 6 && camera.transform.position.y < 12)
+                            camera.transform.position += scrollInput * camera.transform.forward * zoomSpeed * Time.deltaTime;
+
 
                     // ƒWƒƒƒ“ƒvˆ—
                     if (Input.GetKeyDown(KeyCode.Space) && canJump && catchMode == false)
@@ -228,8 +232,7 @@ public class PlayerController : MonoBehaviour
                     if (canCatch && Input.GetMouseButtonDown(0) && (catchMode == false))
                     {
                         rb.useGravity = false;
-                        //rb.useGravity = true;
-            ObjectSelect(catchBlockID);
+                        ObjectSelect(catchBlockID);
                     }
 
 

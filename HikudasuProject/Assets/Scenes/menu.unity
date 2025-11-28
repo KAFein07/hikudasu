@@ -3206,7 +3206,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1973290246}
         m_TargetAssemblyTypeName: StageGenerator, Assembly-CSharp
-        m_MethodName: Stage2
+        m_MethodName: Stage3
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
