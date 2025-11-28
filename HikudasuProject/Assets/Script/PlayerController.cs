@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     private int moveVector;
     private Vector3 moveDirection;
     private Rigidbody rb;
-    private GameObject camera;
+    private new GameObject camera;
     private List<GameObject> allStageBlocks;
     private bool isPaused = false;
     public string scene;
@@ -227,7 +227,9 @@ public class PlayerController : MonoBehaviour
 
                     if (canCatch && Input.GetMouseButtonDown(0) && (catchMode == false))
                     {
-                        ObjectSelect(catchBlockID);
+                        rb.useGravity = false;
+                        //rb.useGravity = true;
+            ObjectSelect(catchBlockID);
                     }
 
 
@@ -275,8 +277,12 @@ public class PlayerController : MonoBehaviour
                 var nearestBlocks = group.Where(b => Mathf.Abs(b.transform.position.x - this.transform.position.x) == minDistance).ToList();
                 result.AddRange(nearestBlocks);
             }
+            Debug.Log("aaa");
+
+            
         }
         selectedObjects = result;
+
         StartCoroutine(CatchModeCoroutine());
     }
 
@@ -315,10 +321,10 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("hiku");
                 yield break;
             }
-            Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
+            //Debug.Log($"Axis = {(Input.GetAxis("Vertical") > 0)} | Count = {selectedObjects.Count > 0} | Copy = {minCopylevel} " );
             if (Input.GetAxis("Vertical") > 0 && selectedObjects.Count > 0 && minCopylevel != 0)
             {
-                Debug.Log("hoge");
+                //Debug.Log("hoge");
                 foreach (var obj in selectedObjects)
                 {
                     obj.transform.SetParent(this.transform);
@@ -327,7 +333,7 @@ public class PlayerController : MonoBehaviour
                 }
                 //selectedObjectsClear();
                 moveVector = 1;
-                Debug.Log("osu");
+                //Debug.Log("osu");
                 yield break;
             }
         }
@@ -448,6 +454,12 @@ public class PlayerController : MonoBehaviour
     public void Fin()
     {
         fin = true;
+    }
+
+    public void rbFin()
+    {
+        Debug.Log("rb true");
+        rb.useGravity = true;
     }
     /*
     public void StartImg()
