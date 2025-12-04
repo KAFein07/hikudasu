@@ -19,6 +19,8 @@ public class StageBlockController : MonoBehaviour
     private MeshRenderer _meshRenderer;
     private BoxCollider _boxCollider;
 
+    private float posY;
+
     private void Start()
     {
         _playerController = _player.GetComponent<PlayerController>();
@@ -35,6 +37,9 @@ public class StageBlockController : MonoBehaviour
                 break;
             case 4:
                 _materials = _playerController.pinkMaterials;
+                break;
+            case 9:
+                _materials = _playerController.whiteMaterials;
                 break;
         }
     }
@@ -63,10 +68,14 @@ public class StageBlockController : MonoBehaviour
             case 3:
                 _materials = _playerController.greenMaterials;
                 break;
+            case 9:
+                _materials = _playerController.whiteMaterials;
+                break;
             case 0:
                 _materials = _playerController.pinkMaterials;
                 break;
         }
+        posY = transform.position.y;
         ChangeColorHigh();
         StartCoroutine(BlockCroutine());
     }
@@ -76,6 +85,9 @@ public class StageBlockController : MonoBehaviour
         _boxCollider.enabled = false;
         while (true)
         {
+            Vector3 position = transform.position;
+            position.y = posY;
+            transform.position = position;
             pos = transform.position;
             switch (_view)
             {
